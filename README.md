@@ -20,6 +20,8 @@ println!("{:?}", creds);
 ```
 
 ## Example Output
+This dialog is only required to generate a valid token. Once a valid token is
+created, it will no longer be shown.
 ```txt
 GitHub username: my_name
 GitHub password:
