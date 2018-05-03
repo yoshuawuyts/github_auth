@@ -137,7 +137,7 @@ impl Default for Authenticator {
   fn default() -> Self {
     let mut config = Config::default();
     config.note = String::from(
-      "An unidentified token created with the github-auth Rust crate.",
+      "An unidentified token created with the github_auth Rust crate.",
     );
     Authenticator {
       name: String::from("GitHub Auth"),

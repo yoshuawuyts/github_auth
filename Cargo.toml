@@ -1,9 +1,9 @@
 [package]
-name = "github-auth"
+name = "github_auth"
 version = "0.1.0"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/yoshuawuyts/github-auth"
-documentation = "https://docs.rs/github-auth"
+repository = "https://github.com/yoshuawuyts/github_auth"
+documentation = "https://docs.rs/github_auth"
 description = "GitHub authentication for CLIs"
 authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
 readme = "README.md"
