@@ -8,7 +8,14 @@ GitHub authentication for CLIs.
 - [Crates.io][2]
 
 ## Usage
-```rust
+```rust,ignore
+extern crate github_auth;
+
+use github_auth::Authenticator;
+
+let auth = Authenticator::default();
+let creds = auth.auth().unwrap();
+println!("{:?}", creds);
 ```
 
 ## Installation
