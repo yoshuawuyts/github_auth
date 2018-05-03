@@ -33,6 +33,7 @@ use self::token::Token;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
+use std::path::PathBuf;
 
 const GITHUB_URL: &'static str = "https://api.github.com/authorizations";
 
@@ -72,6 +73,14 @@ impl Authenticator {
   /// Create a new instance.
   pub fn new(name: String, config: Config) -> Self {
     Authenticator { name, config }
+  }
+
+  /// Get the location at which the token is stored.
+  pub fn location(&self) -> PathBuf {
+    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.name);
+    let dir = dirs.data_dir();
+    let filename = dir.join("token.json");
+    filename
   }
 
   /// Authenticate with GitHub.
