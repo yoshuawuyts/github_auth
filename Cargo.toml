@@ -16,6 +16,7 @@ mkdirp = "0.1.0"
 serde = "1.0.45"
 serde_json = "1.0.17"
 reqwest = "0.8.5"
+serde_derive = "1.0.45"
 
 [dev-dependencies]
 # clippy = "0.0"

@@ -14,7 +14,13 @@ extern crate mkdirp;
 extern crate reqwest;
 extern crate serde;
 extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
 
+mod auth_response;
+mod token;
+
+use self::auth_response::AuthResponse;
 use self::dialoguer::{Input, PasswordInput};
 use self::directories::ProjectDirs;
 use self::failure::Error;
@@ -23,7 +29,10 @@ use self::reqwest::{
   header::{ContentType, Headers, UserAgent},
   Client,
 };
+use self::token::Token;
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::prelude::*;
 
 const GITHUB_URL: &'static str = "https://api.github.com/authorizations";
 
@@ -66,7 +75,19 @@ impl Authenticator {
   }
 
   /// Authenticate with GitHub.
-  pub fn auth(&self) -> Result<Authentication, Error> {
+  pub fn auth(&self) -> Result<Token, Error> {
+    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.name);
+    let dir = dirs.data_dir();
+    mkdirp(&dir)?;
+    let filename = dir.join("token.json");
+
+    if let Ok(mut file) = File::open(&filename) {
+      let mut contents = String::new();
+      file.read_to_string(&mut contents)?;
+      let json: AuthResponse = serde_json::from_str(&contents)?;
+      return Ok(Token::new(json.token));
+    }
+
     // Get CLI input.
     let username = Input::new("GitHub username").interact()?;
     let password = PasswordInput::new("GitHub password").interact()?;
@@ -101,18 +122,13 @@ impl Authenticator {
       )
     );
 
-    println!("{:?}", res);
+    let json: AuthResponse = res.json()?;
 
-    // let auth = Authentication{
-    //   token:
-    //   username,
-    // }
+    let serialized = serde_json::to_string(&json)?;
+    let mut file = File::create(&filename)?;
+    file.write_all(&serialized.as_bytes())?;
 
-    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.name);
-    let dir = dirs.data_dir();
-    mkdirp(&dir)?;
-
-    unimplemented!();
+    Ok(Token::new(json.token))
   }
 }
 
