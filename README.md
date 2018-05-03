@@ -19,6 +19,13 @@ let creds = auth.auth().unwrap();
 println!("{:?}", creds);
 ```
 
+## Example Output
+```txt
+GitHub username: my_name
+GitHub password:
+GitHub OTP (optional): 5678
+```
+
 ## Installation
 ```sh
 $ cargo add github_auth
