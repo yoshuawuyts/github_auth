@@ -1,9 +1,9 @@
 /// Token returned by the authenticator function.
 #[derive(Debug, PartialEq)]
-pub struct Token(Vec<u8>);
+pub struct Token(String);
 
 impl Token {
-  pub(crate) fn new(bytes: Vec<u8>) -> Self {
+  pub(crate) fn new(bytes: String) -> Self {
     Token(bytes)
   }
 }
