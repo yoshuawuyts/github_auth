@@ -54,7 +54,7 @@ pub struct Authenticator {
 #[derive(Debug)]
 pub struct Authentication {
   /// The User's username.
-  user: String,
+  username: String,
   /// The token for the User.
   token: String,
 }
@@ -101,9 +101,17 @@ impl Authenticator {
       )
     );
 
+    println!("{:?}", res);
+
+    // let auth = Authentication{
+    //   token:
+    //   username,
+    // }
+
     let dirs = ProjectDirs::from("com", "GitHub Auth", &self.name);
     let dir = dirs.data_dir();
     mkdirp(&dir)?;
+
     unimplemented!();
   }
 }
@@ -112,7 +120,9 @@ impl Default for Authenticator {
   /// Create a new instance of
   fn default() -> Self {
     let mut config = Config::default();
-    config.note = String::from("An unidentified token.");
+    config.note = String::from(
+      "An unidentified token created with the github-auth Rust crate.",
+    );
     Authenticator {
       name: String::from("GitHub Auth"),
       config,
