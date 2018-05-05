@@ -14,9 +14,12 @@ extern crate github_auth;
 
 use github_auth::Authenticator;
 
-let auth = Authenticator::default();
+let auth = Authenticator::new("my_example_app");
 let creds = auth.auth().unwrap();
 println!("{:?}", creds);
+
+let location = auth.location();
+println!("Token is stored at {:?}", &location);
 ```
 
 ## Example Output
