@@ -29,7 +29,7 @@ use self::reqwest::{
   header::{ContentType, Headers, UserAgent},
   Client,
 };
-use self::token::Token;
+pub use self::token::Token;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
