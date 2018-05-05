@@ -106,7 +106,7 @@ impl Authenticator {
     let client = Client::new();
     let mut headers = Headers::new();
     headers.set_raw("X-GitHub-OTP", otp);
-    headers.set(UserAgent::new("Rust GH Auth client"));
+    headers.set(UserAgent::new("github_auth"));
     headers.set(ContentType::json());
     let mut body = HashMap::new();
     // if let Some(scopes) = self.config.scopes {
