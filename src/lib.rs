@@ -71,7 +71,14 @@ pub struct Authentication {
 
 impl Authenticator {
   /// Create a new instance.
-  pub fn new(name: String, config: Config) -> Self {
+  pub fn new(name: String) -> Self {
+    let mut config = Config::default();
+    config.note = format!("A token created for {}.", &name);
+    Authenticator { name, config }
+  }
+
+  /// Create a new instance and configure it.
+  pub fn with_config(name: String, config: Config) -> Self {
     Authenticator { name, config }
   }
 
@@ -145,9 +152,8 @@ impl Default for Authenticator {
   /// Create a new instance of
   fn default() -> Self {
     let mut config = Config::default();
-    config.note = String::from(
-      "An unidentified token created with the github_auth Rust crate.",
-    );
+    config.note =
+      String::from("A token created with the github_auth Rust crate.");
     Authenticator {
       name: String::from("GitHub Auth"),
       config,
