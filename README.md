@@ -15,8 +15,8 @@ extern crate github_auth;
 use github_auth::Authenticator;
 
 let auth = Authenticator::new("my_example_app");
-let creds = auth.auth().unwrap();
-println!("{:?}", creds);
+let token = auth.auth().unwrap();
+println!("{:?}", token);
 
 let location = auth.location();
 println!("Token is stored at {:?}", &location);
@@ -29,6 +29,32 @@ created, it will no longer be shown.
 GitHub username: my_name
 GitHub password:
 GitHub OTP (optional): 5678
+```
+
+## Authenticating with the token
+Once you've acquired an access token, [you can use it to
+authenticate](https://developer.github.com/apps/building-oauth-apps/authorization-options-for-oauth-apps/#3-use-the-access-token-to-access-the-api).
+Here's how to authenticate with the [reqwest](http://docs.rs/reqwest) crate.
+```rust,ignore
+extern crate github_auth;
+extern crate reqwest;
+
+use github_auth::Authenticator;
+use reqwest::{
+  header::{Authorization, Headers, UserAgent},
+  Client,
+};
+
+let auth = Authenticator::new("my_example_app");
+let token = auth.auth().unwrap();
+
+let mut headers = Headers::new();
+headers.set(Authorization(format!("token {}", token.as_str())).to_owned());
+headers.set(UserAgent::new("my_app"));
+
+let url = "https://api.github.com/user";
+let mut res = client.get(&url).headers(headers).send()?;
+println!("{:?}", res.status());
 ```
 
 ## Installation
