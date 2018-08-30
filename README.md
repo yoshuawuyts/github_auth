@@ -20,6 +20,16 @@ println!("{:?}", token);
 
 let location = auth.location();
 println!("Token is stored at {:?}", &location);
+
+let auth = Authenticator::builder("github_auth main example".into())
+  .scope("public_repo".into())
+  .build();
+
+let token = auth.auth().unwrap();
+println!("{:?}", token);
+
+let location = auth.location();
+println!("Token stored at: {:?}", location);
 ```
 
 ## Example Output
