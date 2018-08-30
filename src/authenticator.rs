@@ -9,7 +9,7 @@ use reqwest::{
 };
 use serde_json;
 
-use std::fs::File;
+use std::fs::{remove_file, File};
 use std::io::prelude::*;
 use std::path::PathBuf;
 
@@ -63,6 +63,11 @@ impl Authenticator {
     let dir = dirs.data_dir();
     let filename = dir.join("token.json");
     filename
+  }
+
+  /// Remove the token from the local storage.
+  pub fn delete(&self) -> Result<(), Error> {
+    Ok(remove_file(self.location())?)
   }
 
   /// Authenticate with GitHub.
