@@ -12,17 +12,10 @@ so that future interactions just work.
 ```rust,ignore
 extern crate github_auth;
 
-use github_auth::Authenticator;
-
-let auth = Authenticator::new("my_example_app");
-let token = auth.auth().unwrap();
-println!("{:?}", token);
-
-let location = auth.location();
-println!("Token is stored at {:?}", &location);
+use github_auth::{Authenticator, Scope};
 
 let auth = Authenticator::builder("github_auth main example".into())
-  .scope("public_repo".into())
+  .scope(Scope::PublicRepo)
   .build();
 
 let token = auth.auth().unwrap();
