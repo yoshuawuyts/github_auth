@@ -3,10 +3,7 @@ use dialoguer::{Input, PasswordInput};
 use directories::ProjectDirs;
 use failure::Error;
 use mkdirp::mkdirp;
-use reqwest::{
-  header::{ContentType, Headers, UserAgent},
-  Client,
-};
+use reqwest::Client;
 use serde_json;
 
 use std::fs::{remove_file, File};
@@ -58,21 +55,27 @@ impl Authenticator {
   }
 
   /// Get the location at which the token is stored.
-  pub fn location(&self) -> PathBuf {
-    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name);
+  pub fn location(&self) -> Result<PathBuf, Error> {
+    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name)
+      .ok_or_else(|| {
+        format_err!("Could not access project dir for {}", &self.config.name)
+      })?;
     let dir = dirs.data_dir();
     let filename = dir.join("token.json");
-    filename
+    Ok(filename)
   }
 
   /// Remove the token from the local storage.
   pub fn delete(&self) -> Result<(), Error> {
-    Ok(remove_file(self.location())?)
+    Ok(remove_file(self.location()?)?)
   }
 
   /// Authenticate with GitHub.
   pub fn auth(&self) -> Result<Token, Error> {
-    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name);
+    let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name)
+      .ok_or_else(|| {
+        format_err!("Could not access project dir for {}", &self.config.name)
+      })?;
     let dir = dirs.data_dir();
     mkdirp(&dir)?;
     let filename = dir.join("token.json");
@@ -89,23 +92,18 @@ impl Authenticator {
     let password = PasswordInput::new("GitHub password").interact()?;
     let otp = Input::new("GitHub OTP (optional)").interact()?;
 
-    // Create HTTP headers
-    let client = Client::new();
-    let mut headers = Headers::new();
-    headers.set_raw("X-GitHub-OTP", otp);
-    headers.set(UserAgent::new("github_auth"));
-    headers.set(ContentType::json());
-
     // Create HTTP body
     let note = self.config.note.clone();
     let scopes = self.config.scopes.clone();
     let body = AuthRequest::new(note, scopes);
 
     // Perform HTTP request.
-    let mut res = client
+    let mut res = Client::new()
       .post(::GITHUB_AUTH_URL)
+      .header("X-GitHub-OTP", otp)
+      .header("User-Agent", "github_auth")
+      .header("Content-Type", "json")
       .json(&body)
-      .headers(headers)
       .basic_auth(username, Some(password))
       .send()?;
 
