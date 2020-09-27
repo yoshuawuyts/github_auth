@@ -1,11 +1,10 @@
 use crate::auth_response::AuthResponse;
 use dialoguer::{Input, PasswordInput};
 use directories::ProjectDirs;
-use failure::Error;
-use reqwest::Client;
+use serde::Serialize;
 use serde_json;
-use serde::{Serialize};
-use failure::{format_err, ensure};
+use surf::http::{bail, format_err, headers};
+use surf::Body;
 
 use std::fs::{self, remove_file, File};
 use std::io::prelude::*;
@@ -56,7 +55,7 @@ impl Authenticator {
     }
 
     /// Get the location at which the token is stored.
-    pub fn location(&self) -> Result<PathBuf, Error> {
+    pub fn location(&self) -> surf::Result<PathBuf> {
         let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name)
             .ok_or_else(|| format_err!("Could not access project dir for {}", &self.config.name))?;
         let dir = dirs.data_dir();
@@ -65,12 +64,12 @@ impl Authenticator {
     }
 
     /// Remove the token from the local storage.
-    pub fn delete(&self) -> Result<(), Error> {
+    pub fn delete(&self) -> surf::Result<()> {
         Ok(remove_file(self.location()?)?)
     }
 
     /// Authenticate with GitHub.
-    pub fn auth(&self) -> Result<Token, Error> {
+    pub async fn auth(&self) -> surf::Result<Token> {
         let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name)
             .ok_or_else(|| format_err!("Could not access project dir for {}", &self.config.name))?;
         let dir = dirs.data_dir();
@@ -94,28 +93,32 @@ impl Authenticator {
         let scopes = self.config.scopes.clone();
         let body = AuthRequest::new(note, scopes);
 
+        // Encode username / password for basic auth.
+        let mut auth_value = b"Basic ".to_vec();
+        let mut encoder = base64::write::EncoderWriter::new(&mut auth_value, base64::STANDARD);
+        write!(encoder, "{}:{}", username, password)?;
+        drop(encoder);
+        let auth_value = String::from_utf8(auth_value)?;
+
         // Perform HTTP request.
-        let mut res = Client::new()
-            .post(crate::GITHUB_AUTH_URL)
+        let mut res = surf::post(crate::GITHUB_AUTH_URL)
             .header("X-GitHub-OTP", otp)
             .header("User-Agent", "github_auth")
-            .header("Content-Type", "json")
-            .json(&body)
-            .basic_auth(username, Some(password))
-            .send()?;
+            .header(headers::AUTHORIZATION, auth_value)
+            .body(Body::from_json(&body)?)
+            .await?;
 
         // Parse request output.
         let status = res.status();
-        ensure!(
-            status.is_success(),
-            format!(
+        if !status.is_success() {
+            bail!(
                 "{:?} {:?}",
-                res.text().unwrap(),
-                status.canonical_reason().unwrap()
-            )
-        );
+                res.body_string().await?,
+                status.canonical_reason()
+            );
+        };
 
-        let json: AuthResponse = res.json()?;
+        let json: AuthResponse = res.body_json().await?;
 
         let serialized = serde_json::to_string(&json)?;
         let mut file = File::create(&filename)?;
