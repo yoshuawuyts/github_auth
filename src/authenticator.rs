@@ -2,11 +2,12 @@ use crate::auth_response::AuthResponse;
 use dialoguer::{Input, PasswordInput};
 use directories::ProjectDirs;
 use failure::Error;
-use mkdirp::mkdirp;
 use reqwest::Client;
 use serde_json;
+use serde::{Serialize};
+use failure::{format_err, ensure};
 
-use std::fs::{remove_file, File};
+use std::fs::{self, remove_file, File};
 use std::io::prelude::*;
 use std::path::PathBuf;
 
@@ -73,7 +74,7 @@ impl Authenticator {
         let dirs = ProjectDirs::from("com", "GitHub Auth", &self.config.name)
             .ok_or_else(|| format_err!("Could not access project dir for {}", &self.config.name))?;
         let dir = dirs.data_dir();
-        mkdirp(&dir)?;
+        fs::create_dir_all(&dir)?;
         let filename = dir.join("token.json");
 
         if let Ok(mut file) = File::open(&filename) {

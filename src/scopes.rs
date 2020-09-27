@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 /// GitHub OAuth scope definitions.
 ///
 /// ## Further Reading
