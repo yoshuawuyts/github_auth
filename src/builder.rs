@@ -41,7 +41,7 @@ impl Builder {
     }
 
     /// Finalize the builder, and return an `Authenticator` instance.
-    pub fn build(self) -> ::Authenticator {
-        ::Authenticator { config: self }
+    pub fn build(self) -> crate::Authenticator {
+        crate::Authenticator { config: self }
     }
 }

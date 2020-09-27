@@ -1,4 +1,4 @@
-use auth_response::AuthResponse;
+use crate::auth_response::AuthResponse;
 use dialoguer::{Input, PasswordInput};
 use directories::ProjectDirs;
 use failure::Error;
@@ -95,7 +95,7 @@ impl Authenticator {
 
         // Perform HTTP request.
         let mut res = Client::new()
-            .post(::GITHUB_AUTH_URL)
+            .post(crate::GITHUB_AUTH_URL)
             .header("X-GitHub-OTP", otp)
             .header("User-Agent", "github_auth")
             .header("Content-Type", "json")
