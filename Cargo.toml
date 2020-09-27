@@ -7,6 +7,7 @@ documentation = "https://docs.rs/github_auth"
 description = "Authenticate with GitHub from the command line."
 authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
 readme = "README.md"
+edition = "2018"
 
 [dependencies]
 dialoguer = "0.1.0"
