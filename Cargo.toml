@@ -1,6 +1,6 @@
 [package]
 name = "github_auth"
-version = "0.7.1"
+version = "0.8.0"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/yoshuawuyts/github_auth"
 documentation = "https://docs.rs/github_auth"
@@ -19,4 +19,5 @@ base64 = "0.12.3"
 
 [dev-dependencies]
 async-std = { version = "1.6.4", features = ["attributes"] }
+chrono = "0.4.18"
 # clippy = "0.0"
