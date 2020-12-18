@@ -95,13 +95,13 @@ pub enum Scope {
     /// Allows read access for team discussions.
     #[serde(rename = "read:discussion")]
     ReadDiscussion,
-    ///	Fully manage GPG keys.
+    /// Fully manage GPG keys.
     #[serde(rename = "admin:gpg_key")]
     AdminGpgKey,
-    ///	Create, list, and view details for GPG keys.
+    /// Create, list, and view details for GPG keys.
     #[serde(rename = "write:gpg_key")]
     WriteGpgKey,
-    ///	List and view details for GPG keys.
+    /// List and view details for GPG keys.
     #[serde(rename = "read:gpg_key")]
     ReadGpgKey,
 }

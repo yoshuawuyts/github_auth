@@ -29,7 +29,7 @@ impl Builder {
 
     /// Add a scope. [Read more.](https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/)
     pub fn scope(mut self, scope: Scope) -> Self {
-        if let None = self.scopes {
+        if self.scopes.is_none() {
             self.scopes = Some(vec![]);
         }
 

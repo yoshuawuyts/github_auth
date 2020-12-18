@@ -2,7 +2,6 @@ use crate::auth_response::AuthResponse;
 use dialoguer::{Input, PasswordInput};
 use directories::ProjectDirs;
 use serde::Serialize;
-use serde_json;
 use surf::http::{bail, format_err, headers};
 use surf::Body;
 
